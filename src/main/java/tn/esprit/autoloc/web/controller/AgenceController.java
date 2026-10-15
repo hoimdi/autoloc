@@ -2,33 +2,31 @@ package tn.esprit.autoloc.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.autoloc.domain.Agence;
-import tn.esprit.autoloc.domain.Employe;
 import tn.esprit.autoloc.service.IAgenceService;
-import tn.esprit.autoloc.service.IEmployeService;
 
 import java.util.List;
 
-@Tag(name = "Agences & Employes", description = "Gestion des agences et du personnel AutoLoc")
+@Tag(name = "Agences", description = "Gestion des agences AutoLoc")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/agences")
 @RequiredArgsConstructor
-public class AgenceEmployeController {
+public class AgenceController {
 
     private final IAgenceService agenceService;
-    private final IEmployeService employeService;
 
     @Operation(summary = "Liste des agences")
-    @GetMapping("/agences")
+    @GetMapping
     public ResponseEntity<List<Agence>> retrieveAllAgences() {
         return ResponseEntity.ok(agenceService.retrieveAllAgences());
     }
 
-    @Operation(summary = "Recuperer une agence")
-    @GetMapping("/agences/{idAgence}")
+    @Operation(summary = "Recuperer une agence par id")
+    @GetMapping("/{idAgence}")
     public ResponseEntity<Agence> retrieveAgence(@PathVariable Long idAgence) {
         return agenceService.retrieveAgence(idAgence)
                 .map(ResponseEntity::ok)
@@ -36,20 +34,21 @@ public class AgenceEmployeController {
     }
 
     @Operation(summary = "Ajouter une agence")
-    @PostMapping("/agences")
-    public ResponseEntity<Agence> addAgence(@RequestBody Agence agence) {
+    @PostMapping
+    public ResponseEntity<Agence> addAgence(@Valid @RequestBody Agence agence) {
         return ResponseEntity.ok(agenceService.addAgence(agence));
     }
 
-    @Operation(summary = "Liste des employes")
-    @GetMapping("/employes")
-    public ResponseEntity<List<Employe>> retrieveAllEmployes() {
-        return ResponseEntity.ok(employeService.retrieveAllEmployes());
+    @Operation(summary = "Modifier une agence")
+    @PutMapping
+    public ResponseEntity<Agence> modifyAgence(@Valid @RequestBody Agence agence) {
+        return ResponseEntity.ok(agenceService.modifyAgence(agence));
     }
 
-    @Operation(summary = "Ajouter un employe")
-    @PostMapping("/employes")
-    public ResponseEntity<Employe> addEmploye(@RequestBody Employe employe) {
-        return ResponseEntity.ok(employeService.addEmploye(employe));
+    @Operation(summary = "Supprimer une agence")
+    @DeleteMapping("/{idAgence}")
+    public ResponseEntity<Void> removeAgence(@PathVariable Long idAgence) {
+        agenceService.removeAgence(idAgence);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,5 +1,7 @@
 package tn.esprit.autoloc.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Equipement {
 
     @Id
@@ -24,6 +27,7 @@ public class Equipement {
     @Column(nullable = false, length = 100)
     private String libelle;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "equipements", fetch = FetchType.LAZY)
     private List<Vehicule> vehicules = new ArrayList<>();
 }

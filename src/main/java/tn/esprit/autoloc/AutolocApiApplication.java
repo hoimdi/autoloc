@@ -9,8 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableAsync
 public class AutolocApiApplication {
-
-    public static void main(String[] args) {
+public static void main(String[] args) {
         SpringApplication.run(AutolocApiApplication.class, args);
     }
 

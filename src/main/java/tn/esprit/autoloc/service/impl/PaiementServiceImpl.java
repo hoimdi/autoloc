@@ -3,7 +3,9 @@ package tn.esprit.autoloc.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tn.esprit.autoloc.domain.Contrat;
 import tn.esprit.autoloc.domain.Paiement;
+import tn.esprit.autoloc.repository.IContratRepository;
 import tn.esprit.autoloc.repository.IPaiementRepository;
 import tn.esprit.autoloc.service.IPaiementService;
 
@@ -16,6 +18,7 @@ import java.util.Optional;
 public class PaiementServiceImpl implements IPaiementService {
 
     private final IPaiementRepository paiementRepository;
+    private final IContratRepository contratRepository;
 
     @Override
     public List<Paiement> retrieveAllPaiements() {
@@ -29,6 +32,7 @@ public class PaiementServiceImpl implements IPaiementService {
 
     @Override
     public Paiement addPaiement(Paiement paiement) {
+        affecterContrat(paiement);
         return paiementRepository.save(paiement);
     }
 
@@ -39,6 +43,14 @@ public class PaiementServiceImpl implements IPaiementService {
 
     @Override
     public Paiement modifyPaiement(Paiement paiement) {
+        affecterContrat(paiement);
         return paiementRepository.save(paiement);
+    }
+
+    private void affecterContrat(Paiement paiement) {
+        if (paiement.getContrat() != null && paiement.getContrat().getIdContrat() != null) {
+            Contrat contratRef = contratRepository.getReferenceById(paiement.getContrat().getIdContrat());
+            paiement.setContrat(contratRef);
+        }
     }
 }

@@ -9,6 +9,7 @@ import tn.esprit.autoloc.domain.CategorieVehicule;
 import tn.esprit.autoloc.domain.StatutVehicule;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -39,4 +40,9 @@ public class VehiculeDTO {
 
     @NotNull(message = "Le statut est obligatoire")
     private StatutVehicule statut;
+
+    @NotNull(message = "L'id de l'agence est obligatoire")
+    private Long idAgence;
+
+    private List<Long> idsEquipements;
 }

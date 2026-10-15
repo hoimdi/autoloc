@@ -6,7 +6,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.autoloc.domain.Client;
 import tn.esprit.autoloc.domain.Reservation;
+import tn.esprit.autoloc.domain.Vehicule;
+import tn.esprit.autoloc.repository.IClientRepository;
+import tn.esprit.autoloc.repository.IVehiculeRepository;
 import tn.esprit.autoloc.service.IReservationService;
 import tn.esprit.autoloc.web.dto.ReservationMapper;
 import tn.esprit.autoloc.web.dto.ReservationRequestDTO;
@@ -22,6 +26,8 @@ public class ReservationController {
 
     private final IReservationService reservationService;
     private final ReservationMapper reservationMapper;
+    private final IClientRepository clientRepository;
+    private final IVehiculeRepository vehiculeRepository;
 
     @Operation(summary = "Liste des reservations")
     @GetMapping
@@ -46,12 +52,13 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponseDTO> addReservation(@Valid @RequestBody ReservationRequestDTO dto) {
         Reservation entity = reservationMapper.toEntity(dto);
-        Reservation saved = reservationService.addReservation(entity);
-        if (dto.getIdClient() != null && dto.getIdVehicule() != null) {
-            saved = reservationService.affecterClientEtVehicule(
-                    saved.getIdReservation(), dto.getIdClient(), dto.getIdVehicule()
-            );
+        if (dto.getIdClient() != null) {
+            clientRepository.findById(dto.getIdClient()).ifPresent(entity::setClient);
         }
+        if (dto.getIdVehicule() != null) {
+            vehiculeRepository.findById(dto.getIdVehicule()).ifPresent(entity::setVehicule);
+        }
+        Reservation saved = reservationService.addReservation(entity);
         return ResponseEntity.ok(reservationMapper.toDto(saved));
     }
 

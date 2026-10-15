@@ -7,6 +7,11 @@ import tn.esprit.autoloc.domain.Vehicule;
 @Mapper(componentModel = "spring")
 public interface VehiculeMapper {
 
+    @Mapping(target = "idAgence", source = "agence.idAgence")
+    @Mapping(
+            target = "idsEquipements",
+            expression = "java(vehicule.getEquipements().stream().map(tn.esprit.autoloc.domain.Equipement::getIdEquipement).toList())"
+    )
     VehiculeDTO toDto(Vehicule vehicule);
 
     @Mapping(target = "agence", ignore = true)

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.autoloc.domain.Vehicule;
+import tn.esprit.autoloc.domain.StatutVehicule;
 import tn.esprit.autoloc.service.IVehiculeService;
 import tn.esprit.autoloc.web.dto.VehiculeDTO;
 import tn.esprit.autoloc.web.dto.VehiculeMapper;
@@ -24,8 +25,12 @@ public class VehiculeController {
 
     @Operation(summary = "Liste des vehicules")
     @GetMapping
-    public ResponseEntity<List<VehiculeDTO>> retrieveAllVehicules() {
-        List<VehiculeDTO> dtos = vehiculeService.retrieveAllVehicules()
+    public ResponseEntity<List<VehiculeDTO>> retrieveAllVehicules(@RequestParam(required = false) StatutVehicule statut) {
+        List<Vehicule> vehicules = (statut == null)
+                ? vehiculeService.retrieveAllVehicules()
+                : vehiculeService.retrieveVehiculesByStatut(statut);
+
+        List<VehiculeDTO> dtos = vehicules
                 .stream()
                 .map(vehiculeMapper::toDto)
                 .toList();
@@ -45,15 +50,19 @@ public class VehiculeController {
     @PostMapping
     public ResponseEntity<VehiculeDTO> addVehicule(@Valid @RequestBody VehiculeDTO dto) {
         Vehicule entity = vehiculeMapper.toEntity(dto);
-        Vehicule saved = vehiculeService.addVehicule(entity);
+        Vehicule saved = vehiculeService.addVehicule(entity, dto.getIdAgence(), dto.getIdsEquipements());
         return ResponseEntity.ok(vehiculeMapper.toDto(saved));
     }
 
     @Operation(summary = "Modifier un vehicule")
     @PutMapping
     public ResponseEntity<VehiculeDTO> modifyVehicule(@Valid @RequestBody VehiculeDTO dto) {
+        if (dto.getIdVehicule() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         Vehicule entity = vehiculeMapper.toEntity(dto);
-        Vehicule saved = vehiculeService.modifyVehicule(entity);
+        entity.setIdVehicule(dto.getIdVehicule());
+        Vehicule saved = vehiculeService.modifyVehicule(entity, dto.getIdAgence(), dto.getIdsEquipements());
         return ResponseEntity.ok(vehiculeMapper.toDto(saved));
     }
 

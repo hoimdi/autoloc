@@ -35,6 +35,7 @@ public class ContratServiceImpl implements IContratService {
 
     @Override
     public Contrat addContrat(Contrat contrat) {
+        affecterReservation(contrat);
         return contratRepository.save(contrat);
     }
 
@@ -45,7 +46,15 @@ public class ContratServiceImpl implements IContratService {
 
     @Override
     public Contrat modifyContrat(Contrat contrat) {
+        affecterReservation(contrat);
         return contratRepository.save(contrat);
+    }
+
+    private void affecterReservation(Contrat contrat) {
+        if (contrat.getReservation() != null && contrat.getReservation().getIdReservation() != null) {
+            Reservation reservationRef = reservationRepository.getReferenceById(contrat.getReservation().getIdReservation());
+            contrat.setReservation(reservationRef);
+        }
     }
 
     @Override
